@@ -37,24 +37,28 @@ python3 -m http.server 8000
 (Opening `index.html` via `file://` also works, but a server matches production
 behavior for the videos and headers.)
 
-## Deploy — Cloudflare Pages
+## Deploy — Cloudflare Pages (GitHub Actions)
 
-### Option A: Git integration (recommended)
-1. Push this repo to GitHub/GitLab.
-2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git**.
-3. Build settings:
-   - **Framework preset:** None
-   - **Build command:** *(leave empty)*
-   - **Build output directory:** `/`
-4. Deploy. Every push to the production branch publishes automatically.
+Every push to `main` deploys automatically via
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), which runs
+`wrangler pages deploy . --project-name=portfolio-juli`.
 
-### Option B: Direct upload via Wrangler
+**One-time setup** — in the GitHub repo, create an **Environment** named `CLOUDFLARE`
+(Settings → Environments) and add two secrets to it:
+
+| Secret | Where to get it |
+|--------|-----------------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare dashboard → My Profile → API Tokens → *Create Token* → **Edit Cloudflare Workers** (or a custom token with `Account › Cloudflare Pages › Edit`). |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → Workers & Pages → right sidebar **Account ID**. |
+
+The first run creates the `portfolio-juli` Pages project automatically. The `_headers`
+file (security headers + asset caching) is applied by Cloudflare on every deploy.
+
+### Manual deploy (optional)
 ```bash
 npm install -g wrangler
-wrangler pages deploy . --project-name=julia-reisin-portfolio
+wrangler pages deploy . --project-name=portfolio-juli
 ```
-
-The `_headers` file is applied automatically by Cloudflare Pages.
 
 ## Editing notes
 
